@@ -1,0 +1,9 @@
+.stat__wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat__item {
+  padding: 10px;
+  font-size: 20px;
+}

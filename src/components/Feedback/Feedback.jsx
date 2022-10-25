@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import css from './Feedback.module.css';
+import Statistics from './Statistics/Statistics';
+import FeedbackOptions from './FeedbackOptions/FeedbackOptions';
+import Section from './Section/Section';
+import Notification from './Notification/Notification';
 
 class Feedback extends Component {
   state = {
@@ -8,26 +12,10 @@ class Feedback extends Component {
     bad: 0,
   };
 
-  onClickToGood = () => {
-    this.setState(prevState => {
-      return {
-        good: prevState.good + 1,
-      };
-    });
-  };
-  onClickToNeutral = () => {
-    this.setState(prevState => {
-      return {
-        neutral: prevState.neutral + 1,
-      };
-    });
-  };
-  onClickToBad = () => {
-    this.setState(prevState => {
-      return {
-        bad: prevState.bad + 1,
-      };
-    });
+  counterOfFeedback = option => {
+    this.setState(prevState => ({
+      [option]: prevState[option] + 1,
+    }));
   };
   countTotalFeedback = () => {
     const { good, neutral, bad } = this.state;
@@ -40,45 +28,29 @@ class Feedback extends Component {
 
   render() {
     const rewiev = this.state;
+    const options = Object.keys(this.state);
 
     return (
       <section className={css.block}>
-        <h2>Please leave feedback</h2>
-        <div>
-          <button
-            className={css.button}
-            type="button"
-            onClick={this.onClickToGood}
-          >
-            Good
-          </button>
-          <button
-            className={[css.button, css.neutral].join(' ')}
-            type="button"
-            onClick={this.onClickToNeutral}
-          >
-            Neutral
-          </button>
-          <button
-            className={[css.button, css.bad].join(' ')}
-            type="button"
-            onClick={this.onClickToBad}
-          >
-            Bad
-          </button>
-        </div>
-        <h2>Statistics</h2>
-        <div className={css.stat__wrap}>
-          <span className={css.stat__item}>Good: {rewiev.good}</span>
-          <span className={css.stat__item}>Neutral: {rewiev.neutral}</span>
-          <span className={css.stat__item}>Bad: {rewiev.bad}</span>
-          <span className={css.stat__item}>
-            Total: {this.countTotalFeedback()}
-          </span>
-          <span className={css.stat__item}>
-            Total: {this.countPositiveFeedbackPercentage()}%
-          </span>
-        </div>
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            options={options}
+            onLeaveFeedback={this.counterOfFeedback}
+          />
+        </Section>
+        {this.countTotalFeedback() > 0 ? (
+          <Section>
+            <Statistics
+              good={rewiev.good}
+              neutral={rewiev.neutral}
+              bad={rewiev.bad}
+              totalFeedback={this.countTotalFeedback()}
+              positivePercentage={this.countPositiveFeedbackPercentage() + '%'}
+            />
+          </Section>
+        ) : (
+          <Notification message="There is no feedback" />
+        )}
       </section>
     );
   }
